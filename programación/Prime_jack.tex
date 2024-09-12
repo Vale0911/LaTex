@@ -1,0 +1,684 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{listings} % Paquete para código
+\usepackage{xcolor}   % Paquete para colores en el código
+
+\title{Prime Jack - hitos y prompts}
+\author{Valentina Mesa}
+\date{September 2024}
+
+% Configuración de estilo para el código
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=10pt,
+    frame=single,
+    tabsize=4,
+    showstringspaces=false
+}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+
+\begin{document}
+
+\maketitle
+
+\section{Hito. Estructura inicial del código en Python y c++}
+
+
+\textbf{Prompt Usado:}
+
+\begin{quote}
+“Eres un desarrollador y te contratan para realizar un juego en Python y C++. El juego consiste en lo siguiente:
+
+En lugar de cartas, se usan 2 dados de 6 lados. El objetivo es llegar a 23 o al número más cercano, priorizando números primos. Un número primo gana frente a uno mayor. Entre primos, gana el mayor.
+
+Si un jugador saca dobles, puede dividir el lanzamiento y usar 3 dados adicionales para cada nueva tirada.
+
+Si sale un 12, el jugador puede lanzar solo 1 dado más, con un máximo de 18.”
+\end{quote}
+
+\textbf{Resultado:}
+\begin{quote}
+ChatGPT generó un código con términos que aún no comprendo bien, lo que lo hace algo complejo. Utiliza decoradores para penalizar automáticamente a los jugadores que exceden el valor permitido, además de listas por comprensión y funciones lambda para simplificar operaciones. La implementación con clases también mejora la estructura del código.
+
+    
+\end{quote}
+
+\begin{lstlisting}[language=Python, caption=Código en Python]
+import random
+
+def penalizar_si_excede(func):
+    return lambda *args, **kwargs: 
+    max(func(*args, **kwargs) - random.randint(1, 5), 0) 
+    if func(*args, **kwargs) > 23 else func(*args, **kwargs)
+
+class Jugador:
+    def __init__(self, nombre):
+        self.nombre = nombre
+        self.puntaje = 0
+
+    @penalizar_si_excede
+    def jugar_turno(self):
+        dados = [random.randint(1, 6) for _ in range(2)]
+        self.puntaje = sum(dados)
+        if dados[0] == dados[1]:
+            self.puntaje = sum([random.randint(1, 6) for _ in range(3)])
+        if self.puntaje == 12:
+            self.puntaje += random.randint(1, 6)
+        return self.puntaje
+
+def es_primo(num):
+    return num > 1 and all(num % i for i in range(2, int(num**0.5) + 1))
+
+def determinar_ganador(j1, j2):
+    if es_primo(j1.puntaje) != es_primo(j2.puntaje):
+        return f"{j1.nombre} gana con un número primo." 
+        if es_primo(j1.puntaje) else f"{j2.nombre} gana con un número primo."
+    return f"{j1.nombre} gana." if j1.puntaje > j2.puntaje else f"{j2.nombre} gana."
+
+jugador1, jugador2 = Jugador("Jugador 1"), Jugador("Jugador 2")
+print(determinar_ganador(jugador1, jugador2))
+
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=C++, caption=Código en C++]
+#include <iostream>
+#include <vector>
+#include <cstdlib>  // Para rand() y srand()
+#include <ctime>    // Para time()
+#include <cmath>    // Para sqrt()
+
+using namespace std;
+
+// Función para penalizar si el puntaje excede 23
+int penalizar_si_excede(int puntaje) {
+    if (puntaje > 23) {
+        int penalizacion = rand() % 5 + 1; // Genera un número aleatorio entre 1 y 5
+        return max(puntaje - penalizacion, 0);
+    }
+    return puntaje;
+}
+
+// Clase Jugador
+class Jugador {
+public:
+    string nombre;
+    int puntaje;
+
+    Jugador(string nombre) : nombre(nombre), puntaje(0) {}
+
+    int jugar_turno() {
+        vector<int> dados = {rand() % 6 + 1, rand() % 6 + 1}; // Dos dados de 1 a 6
+        puntaje = dados[0] + dados[1];
+
+        // Si los dados son iguales (dobles), tirar 3 dados adicionales
+        if (dados[0] == dados[1]) {
+            puntaje = 0;
+            for (int i = 0; i < 3; ++i) {
+                puntaje += rand() % 6 + 1;
+            }
+        }
+
+        // Si el puntaje es 12, tirar 1 dado más
+        if (puntaje == 12) {
+            puntaje += rand() % 6 + 1;
+        }
+
+        // Aplicar penalización si excede 23
+        puntaje = penalizar_si_excede(puntaje);
+
+        return puntaje;
+    }
+};
+
+// Función para determinar si un número es primo
+bool es_primo(int num) {
+    if (num <= 1) return false;
+    for (int i = 2; i <= sqrt(num); ++i) {
+        if (num % i == 0) return false;
+    }
+    return true;
+}
+
+// Función para determinar el ganador
+string determinar_ganador(Jugador& j1, Jugador& j2) {
+    if (es_primo(j1.puntaje) != es_primo(j2.puntaje)) {
+        if (es_primo(j1.puntaje)) {
+            return j1.nombre + " gana con un número primo.";
+        } else {
+            return j2.nombre + " gana con un número primo.";
+        }
+    }
+
+    return (j1.puntaje > j2.puntaje) ? j1.nombre + " gana." : j2.nombre + " gana.";
+}
+
+int main() {
+    // Semilla para generar números aleatorios
+    srand(time(0));
+
+    // Crear los jugadores
+    Jugador jugador1("Jugador 1");
+    Jugador jugador2("Jugador 2");
+
+    // Cada jugador juega su turno
+    jugador1.jugar_turno();
+    jugador2.jugar_turno();
+
+    // Determinar y mostrar el ganador
+    cout << determinar_ganador(jugador1, jugador2) << endl;
+
+    return 0;
+}
+
+}
+\end{lstlisting}
+\section{Hito. Simplificación del código en Python y c++}
+
+
+\textbf{Prompt Usado:}
+
+\begin{quote}
+“Solo puedes usar primitivas básicas. Condicionales, Ciclos,etc.”
+\end{quote}
+
+\textbf{Resultado:}
+\begin{quote}
+Con este Promt, chat gpt mejoró el codigo usando funciones simples como \verb|es_primo| para verificar números primos, \verb|lanzar_dados| para lanzar dados, y \verb|jugar_ronda| para gestionar el turno de juego. Este enfoque es más directo y fácil de entender porque cada función realiza una tarea específica sin la complejidad de clases o decoradores. Sin embargo, el juego no corría como yo esperaba. 
+
+    
+\end{quote}
+
+\begin{lstlisting}[language=Python, caption=Código en Python]
+import random
+
+# Función para verificar si un número es primo
+def es_primo(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+# Función para lanzar dados
+def lanzar_dados(cantidad=2):
+    return [random.randint(1, 6) for _ in range(cantidad)]
+
+# Función para jugar una ronda
+def jugar_ronda():
+    total = 0
+    while total < 23:
+        dados = lanzar_dados()
+        print(f"Lanzaste: {dados}")
+        
+        # Si el jugador saca dobles
+        if dados[0] == dados[1]:
+            print(f"¡Sacaste dobles de {dados[0]}!")
+            # Permite dividir el lanzamiento
+            for _ in range(2):  # Dos lanzamientos adicionales
+                nuevos_dados = lanzar_dados(3)  # Se lanzan 3 dados
+                print(f"Nuevos dados tras dividir: {nuevos_dados}")
+                total += sum(nuevos_dados)
+                if total >= 23:
+                    break
+            continue
+        
+        # Si el jugador saca 12
+        if sum(dados) == 12:
+            print("¡Sacaste un 12! Puedes lanzar un solo dado.")
+            dado_extra = lanzar_dados(1)[0]
+            print(f"Lanzaste el dado extra: {dado_extra}")
+            total += dado_extra
+            if total >= 23:
+                break
+            continue
+
+        total += sum(dados)
+
+        # Opción de detener el juego si se llega a 23 o más
+        if total >= 23:
+            break
+        
+        print(f"Total acumulado: {total}")
+    
+    return total
+
+# Función para determinar el ganador
+def determinar_ganador(jugador1, jugador2):
+    # Revisar si alguno tiene un número primo
+    if es_primo(jugador1) and es_primo(jugador2):
+        return 1 if jugador1 > jugador2 else 2
+    if es_primo(jugador1):
+        return 1
+    if es_primo(jugador2):
+        return 2
+    
+    # Si ninguno tiene primos, gana el que esté más cerca a 23
+    return 1 if jugador1 <= 23 and (jugador1 > jugador2 or jugador2 > 23) else 2
+
+# Juego principal
+def juego_prime_jack():
+    print("Turno del Jugador 1")
+    jugador1 = jugar_ronda()
+    print(f"Puntuación final del Jugador 1: {jugador1}\n")
+
+    print("Turno del Jugador 2")
+    jugador2 = jugar_ronda()
+    print(f"Puntuación final del Jugador 2: {jugador2}\n")
+
+    ganador = determinar_ganador(jugador1, jugador2)
+    print(f"El ganador es el Jugador {ganador}")
+
+# Ejecutar el juego
+juego_prime_jack()
+
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption=Código en C++]
+#include <iostream>
+#include <vector>
+#include <cstdlib>  // Para rand() y srand()
+#include <ctime>    // Para time()
+#include <cmath>    // Para sqrt()
+
+using namespace std;
+
+// Función para penalizar si el puntaje excede 23
+int penalizar_si_excede(int puntaje) {
+    if (puntaje > 23) {
+        int penalizacion = rand() % 5 + 1; // Genera un número aleatorio entre 1 y 5
+        return max(puntaje - penalizacion, 0);
+    }
+    return puntaje;
+}
+
+// Clase Jugador
+class Jugador {
+public:
+    string nombre;
+    int puntaje;
+
+    Jugador(string nombre) : nombre(nombre), puntaje(0) {}
+
+    int jugar_turno() {
+        vector<int> dados = {rand() % 6 + 1, rand() % 6 + 1}; // Dos dados de 1 a 6
+        puntaje = dados[0] + dados[1];
+
+        // Si los dados son iguales (dobles), tirar 3 dados adicionales
+        if (dados[0] == dados[1]) {
+            puntaje = 0;
+            for (int i = 0; i < 3; ++i) {
+                puntaje += rand() % 6 + 1;
+            }
+        }
+
+        // Si el puntaje es 12, tirar 1 dado más
+        if (puntaje == 12) {
+            puntaje += rand() % 6 + 1;
+        }
+
+        // Aplicar penalización si excede 23
+        puntaje = penalizar_si_excede(puntaje);
+
+        return puntaje;
+    }
+};
+
+// Función para determinar si un número es primo
+bool es_primo(int num) {
+    if (num <= 1) return false;
+    for (int i = 2; i <= sqrt(num); ++i) {
+        if (num % i == 0) return false;
+    }
+    return true;
+}
+
+// Función para determinar el ganador
+string determinar_ganador(Jugador& j1, Jugador& j2) {
+    if (es_primo(j1.puntaje) != es_primo(j2.puntaje)) {
+        if (es_primo(j1.puntaje)) {
+            return j1.nombre + " gana con un número primo.";
+        } else {
+            return j2.nombre + " gana con un número primo.";
+        }
+    }
+
+    return (j1.puntaje > j2.puntaje) ? j1.nombre + " gana." : j2.nombre + " gana.";
+}
+
+int main() {
+    // Semilla para generar números aleatorios
+    srand(time(0));
+
+    // Crear los jugadores
+    Jugador jugador1("Jugador 1");
+    Jugador jugador2("Jugador 2");
+
+    // Cada jugador juega su turno
+    jugador1.jugar_turno();
+    jugador2.jugar_turno();
+
+    // Determinar y mostrar el ganador
+    cout << determinar_ganador(jugador1, jugador2) << endl;
+
+    return 0;
+}
+
+}
+\end{lstlisting}
+\section{Hito. Correcciones del código en Python y c++}
+
+
+\textbf{Prompt Usado:}
+
+\begin{quote}
+Como el juego con el anterior código creaba la partida completa con solo ejecutar el codigo, le pedi a chat gpt lo siguiente: “El jugador debe escoger si desea lanzar otra vez o quedarse con el puntaje. Corrige eso.”
+\end{quote}
+
+\textbf{Resultado:}
+\begin{quote}
+Chat gpt, creó la variable \verb|seguir_jugando| que controla si el jugador desea continuar lanzando dados o detenerse. Después de cada lanzamiento, se pregunta al jugador si quiere seguir o quedarse con el total actual; si elige no continuar o si el total alcanza o supera 23, el turno termina. Estos ajustes permiten a los jugadores decidir si quieren seguir jugando para aumentar su puntuación o detenerse para protegerla.
+\end{quote}
+\begin{lstlisting}[language=Python, caption=Código en Python]
+import random
+
+# Función para verificar si un número es primo
+def es_primo(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+# Función para lanzar dados
+def lanzar_dados(cantidad=2):
+    return [random.randint(1, 6) for _ in range(cantidad)]
+
+# Función para jugar una ronda
+def jugar_ronda():
+    total = 0
+    seguir_jugando = True
+
+    while seguir_jugando and total < 23:
+        dados = lanzar_dados()
+        print(f"Lanzaste: {dados}")
+        
+        # Si el jugador saca dobles
+        if dados[0] == dados[1]:
+            print(f"¡Sacaste dobles de {dados[0]}!")
+            # Permite dividir el lanzamiento
+            for _ in range(2):  # Dos lanzamientos adicionales
+                nuevos_dados = lanzar_dados(3)  # Se lanzan 3 dados
+                print(f"Nuevos dados tras dividir: {nuevos_dados}")
+                total += sum(nuevos_dados)
+                if total >= 23:
+                    break
+            continue
+        
+        # Si el jugador saca 12
+        if sum(dados) == 12:
+            print("¡Sacaste un 12! Puedes lanzar un solo dado.")
+            dado_extra = lanzar_dados(1)[0]
+            print(f"Lanzaste el dado extra: {dado_extra}")
+            total += dado_extra
+            if total >= 23:
+                break
+            continue
+
+        total += sum(dados)
+
+        print(f"Total acumulado: {total}")
+        
+        # Preguntar al jugador si desea seguir lanzando o quedarse con su total actual
+        if total < 23:
+            respuesta = input("¿Quieres lanzar de nuevo? (s/n): ").strip().lower()
+            if respuesta != 's':
+                seguir_jugando = False
+
+    return total
+
+# Función para determinar el ganador
+def determinar_ganador(jugador1, jugador2):
+    # Revisar si alguno tiene un número primo
+    if es_primo(jugador1) and es_primo(jugador2):
+        return 1 if jugador1 > jugador2 else 2
+    if es_primo(jugador1):
+        return 1
+    if es_primo(jugador2):
+        return 2
+    
+    # Si ninguno tiene primos, gana el que esté más cerca a 23
+    return 1 if jugador1 <= 23 and (jugador1 > jugador2 or jugador2 > 23) else 2
+
+# Juego principal
+def juego_prime_jack():
+    print("Turno del Jugador 1")
+    jugador1 = jugar_ronda()
+    print(f"Puntuación final del Jugador 1: {jugador1}\n")
+
+    print("Turno del Jugador 2")
+    jugador2 = jugar_ronda()
+    print(f"Puntuación final del Jugador 2: {jugador2}\n")
+
+    ganador = determinar_ganador(jugador1, jugador2)
+    print(f"El ganador es el Jugador {ganador}")
+
+# Ejecutar el juego
+juego_prime_jack()
+
+\end{lstlisting}
+\begin{lstlisting}[language=C++, Caption=Código en C++]
+    #include <iostream>
+#include <cstdlib>  // Para rand() y srand()
+#include <ctime>    // Para time()
+
+using namespace std;
+
+// Función para generar un número aleatorio en un rango
+int generar_numero_aleatorio(int min, int max) {
+    return min + rand() % (max - min + 1);
+}
+
+// Función para verificar si un número es primo
+bool es_primo(int num) {
+    if (num <= 1) return false;
+    for (int i = 2; i * i <= num; ++i) {
+        if (num % i == 0) return false;
+    }
+    return true;
+}
+
+// Función para jugar una ronda
+int jugar_ronda() {
+    int total = 0;
+    while (total < 23) {
+        int dado1 = generar_numero_aleatorio(1, 6);
+        int dado2 = generar_numero_aleatorio(1, 6);
+        cout << "Lanzaste: " << dado1 << " y " << dado2 << endl;
+
+        if (dado1 == dado2) {
+            cout << "¡Sacaste dobles de " << dado1 << "!" << endl;
+            for (int i = 0; i < 3; ++i) {
+                int dado_extra = generar_numero_aleatorio(1, 6);
+                cout << "Nuevo dado: " << dado_extra << endl;
+                total += dado_extra;
+            }
+        } else if (dado1 + dado2 == 12) {
+            cout << "¡Sacaste un 12! Puedes lanzar un solo dado." << endl;
+            int dado_extra = generar_numero_aleatorio(1, 6);
+            cout << "Dado extra: " << dado_extra << endl;
+            total += dado_extra;
+        } else {
+            total += dado1 + dado2;
+        }
+
+        if (total >= 23) break;
+        cout << "Total acumulado: " << total << endl;
+    }
+
+    return total;
+}
+
+// Función para determinar el ganador
+int determinar_ganador(int puntaje1, int puntaje2) {
+    bool primo1 = es_primo(puntaje1);
+    bool primo2 = es_primo(puntaje2);
+
+    if (primo1 && !primo2) return 1;
+    if (!primo1 && primo2) return 2;
+    if (primo1 && primo2) return (puntaje1 > puntaje2) ? 1 : 2;
+    return (puntaje1 > puntaje2) ? 1 : 2;
+}
+
+int main() {
+    srand(static_cast<unsigned int>(time(0)));
+
+    cout << "Turno del Jugador 1" << endl;
+    int puntaje1 = jugar_ronda();
+    cout << "Puntuación final del Jugador 1: " << puntaje1 << endl;
+
+    cout << "Turno del Jugador 2" << endl;
+    int puntaje2 = jugar_ronda();
+    cout << "Puntuación final del Jugador 2: " << puntaje2 << endl;
+
+    int ganador = determinar_ganador(puntaje1, puntaje2);
+    cout << "El ganador es el Jugador " << ganador << endl;
+
+    return 0;
+}
+
+\end{lstlisting}
+\section{Hito. Correcciones en c++}
+
+
+\textbf{Prompt Usado:}
+
+\begin{quote}
+"Elimina algunas bibliotecas y usa solo las funcionalidades básicas necesarias en c++”
+\end{quote}
+
+\textbf{Resultado:}
+\begin{quote}
+Las bibliotecas se redujeron a solo \verb|<iostream>|, \verb|<cstdlib>|, y \verb|<ctime>|, y la generación de números aleatorios se simplifica con la función \verb|generar_numero_aleatorio|. Se eliminaron \verb|vector| y \verb|cmath|, utilizando solo operaciones básicas de C++. El código resultante es más lineal y directo, con menos funciones y más centrado en las operaciones fundamentales del juego.
+\end{quote}
+\begin{lstlisting}[language=C++, Caption=Código en C++]
+#include <iostream>
+#include <cstdlib>  // Para rand() y srand()
+#include <ctime>    // Para time()
+
+using namespace std;
+
+// Función para generar un número aleatorio en un rango
+int generar_numero_aleatorio(int min, int max) {
+    return min + rand() % (max - min + 1);
+}
+
+// Función para verificar si un número es primo
+bool es_primo(int num) {
+    if (num <= 1) return false;
+    for (int i = 2; i * i <= num; ++i) {
+        if (num % i == 0) return false;
+    }
+    return true;
+}
+
+// Función para jugar una ronda
+int jugar_ronda() {
+    int total = 0;
+    while (total < 23) {
+        int dado1 = generar_numero_aleatorio(1, 6);
+        int dado2 = generar_numero_aleatorio(1, 6);
+        cout << "Lanzaste: " << dado1 << " y " << dado2 << endl;
+
+        if (dado1 == dado2) {
+            cout << "¡Sacaste dobles de " << dado1 << "!" << endl;
+            for (int i = 0; i < 3; ++i) {
+                int dado_extra = generar_numero_aleatorio(1, 6);
+                cout << "Nuevo dado: " << dado_extra << endl;
+                total += dado_extra;
+            }
+        } else if (dado1 + dado2 == 12) {
+            cout << "¡Sacaste un 12! Puedes lanzar un solo dado." << endl;
+            int dado_extra = generar_numero_aleatorio(1, 6);
+            cout << "Dado extra: " << dado_extra << endl;
+            total += dado_extra;
+        } else {
+            total += dado1 + dado2;
+        }
+
+        if (total >= 23) break;
+        cout << "Total acumulado: " << total << endl;
+    }
+
+    return total;
+}
+
+// Función para determinar el ganador
+int determinar_ganador(int puntaje1, int puntaje2) {
+    bool primo1 = es_primo(puntaje1);
+    bool primo2 = es_primo(puntaje2);
+
+    if (primo1 && !primo2) return 1;
+    if (!primo1 && primo2) return 2;
+    if (primo1 && primo2) return (puntaje1 > puntaje2) ? 1 : 2;
+    return (puntaje1 > puntaje2) ? 1 : 2;
+}
+
+int main() {
+    srand(static_cast<unsigned int>(time(0)));
+
+    cout << "Turno del Jugador 1" << endl;
+    int puntaje1 = jugar_ronda();
+    cout << "Puntuación final del Jugador 1: " << puntaje1 << endl;
+
+    cout << "Turno del Jugador 2" << endl;
+    int puntaje2 = jugar_ronda();
+    cout << "Puntuación final del Jugador 2: " << puntaje2 << endl;
+
+    int ganador = determinar_ganador(puntaje1, puntaje2);
+    cout << "El ganador es el Jugador " << ganador << endl;
+
+    return 0;
+}
+
+
+\end{lstlisting}
+\section*{Fortalezas y debilidades.}
+\begin{quote}
+    El uso de la IA fue muy útil para generar y simplificar el código, proporcionándome soluciones y explicaciones rápidas. Sin embargo, al principio, el código generado era complejo debido al uso de técnicas avanzadas como decoradores y listas por comprensión, lo cual complicó mi entendimiento.
+\end{quote}
+\textbf{Pros}
+\begin{quote}
+    La simplificación del código mediante el uso de funciones básicas y condicionales fue fundamental. Esto facilitó la comprensión y la implementación del juego.
+
+\end{quote}
+\textbf{Contras}
+\begin{quote}
+    El código inicial en Python y C++ contenía elementos avanzados que no comprendía completamente. Esto hizo que la implementación y depuración fueran más difíciles hasta que con la ayuda de la misma IA logré simplificarlo.
+\end{quote}
+\section{Problemas enfrentados y soluciones}
+\begin{quote}
+    El código inicial era complejo por usar decoradores y listas por comprensión, lo que simplifiqué eliminando estos elementos y utilizando solo funciones básicas. Además, modifiqué la implementación para permitir a los jugadores decidir si continuar o detenerse mediante la variable \verb|seguir_jugando|, y reduje las bibliotecas en C++ a las esenciales \verb|<iostream>|, \verb|<cstdlib>|, y \verb|<ctime>|, simplificando así la generación de números aleatorios.
+\end{quote}
+\section{Cómo funciona mi código?}
+\begin{quote}
+    En Python, el código usa varias funciones clave como: \verb|es_primo(n)| para verificar números primos, \verb|lanzar_dados(cantidad=2)|para lanzar dados y \verb|jugar_ronda()| para gestionar una ronda del juego. La función \verb|determinar_ganador(jugador1, jugador2)| decide el ganador basándose en números primos o el puntaje más cercano a 23. Finalmente, \verb|juego_prime_jack()| coordina el juego entre dos jugadores y determina el ganador.
+\end{quote}
+\begin{quote}
+    Así mismo, En C++, el código usa \verb|generar_numero_aleatorio(min, max)| para generar números aleatorios, \verb|es_primo(num)| para verificar números primos y \verb|jugar_ronda()| para manejar el juego, incluyendo lanzamientos de dados y casos especiales. La función \verb|determinar_ganador|(puntaje1, puntaje2) usa booleanos para comparar si las puntuaciones son primas y decide el ganador. Finalmente, \verb|main()| ejecuta el juego, gestionando turnos y mostrando el resultado.
+\end{quote}
+Link juego c++ \href{https://github.com/Vale0911/c-2/blob/master/TallerIA_Ciclos/prime_jack23.cpp}{github}.
+
+Link juego python \href{https://github.com/Vale0911/python/blob/master/TallerIA_Ciclos/Prime_jack23.py}{github}.
+
+
+\end{document}
