@@ -1,0 +1,177 @@
+\documentclass{article}
+\usepackage{tikz}
+\usetikzlibrary{patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.16}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, graphics, setspace}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=3cm,left=2cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{parskip}
+\usepackage{blindtext}
+\usepackage{dirtytalk}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definición}[section]
+
+
+\singlespacing
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[C]{
+    \includegraphics[width=6cm]{Logo_URosario.png}
+}
+\title{Universidad del Rosario\\
+\textbf{Lógica, Teoría de Números y Conjuntos}\\
+\textbf{\Large Tarea 2}\\
+\textbf{\large Profesor: César Augusto Rodríguez Duque}\\
+\author{Valentina Mesa Fajardo - 1021397618 - valentina.mesa@urosario.edu.co}}
+\date{\small\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\singlespacing
+\large
+
+\begin{enumerate}
+  \item (Ejercicio 17) Demuestre por contradicción que si $n\in\mathbb{Z}$ y $11|n^{2}$, entonces $11|n$. 
+  
+  {\centering \textbf{Desarrollo:}\\}
+  \textit{Demostrar por contradicción}\\
+  Supongamos lo contrario, si $11|n^{2}$ entonces $11\nmid n$. Si $11\nmid n$, n no es múltiplo de 11.\\
+  \textit Como $11\nmid n$ su residuo debe ser distinto de 0, tal que: $n=11K +r$ para algún $K y r \in \mathbb{Z}$. Donde K es el cociente y r el residuo.\\
+  
+   \textit Ya que nos interesa $n^{2}$, elevamos a ambos lados de la ecuación al cuadrado.\\
+    \begin{alignat*}{2}
+            n^{2}&=(11k+r)^{2}     &\quad &\text{Expandimos:}\\
+                 &=(11k+r)(11k+r)  &\quad &\text{binomio al cuadrado}\\
+                 &=121k^{2}+11kr+11kr+r^{2} &\quad &\text{resolvemos términos comunes.}\\
+                 &=121k^{2}+22kr+r^{2}       &\quad &\text{}\\
+  \end{alignat*}
+  \textit Ahora observemos que sucede al dividir estos factores ($121k^{2}+22kr+r^{2}$) por 11, es decir, hallar los residuos de $n^{2}$ mod 11:\\
+      \begin{alignat*}{2}
+            121^{2} \ mod \ 11 &=    &\quad &\text{(es divisible por 11) su residuo es 0}\\
+            22kr\ mod \ 11 &=       &\quad &\text{(es divisible por 11) su residuo es 0}\\
+  \end{alignat*}
+  \textit Lo que nos deja con una expresión simplificada.\\
+        \begin{alignat*}{2}
+            n^{2} &= r^{2} \ mod \ 11   &\quad &\text{}\\
+  \end{alignat*}
+    \textit Es decir, el residuo de $n^{2}$ es el mismo que el de $r^{2}$ (al dividirlos por 11). Evaluemos los valores arbitrarios de r:\\
+    \begin{alignat*}{2}
+            r &= 1 &= r^{2} &= (1)^{2} &= 1\ mod \ 11 &=  0,09 &\quad &\text{}\\
+            r &= 5 &= r^{2} &= (5)^{2} &= 25\ mod \ 11 &=  2,27 &\quad &\text{}\\
+            r &= 9 &= r^{2} &= (9)^{2} &= 81\ mod \ 11 &=  2,27 &\quad &\text{}\\
+\end{alignat*}
+    \textit Ningún residuo es $0$, si $r\neq 0 $ $(\rightarrow\leftarrow)$. Ningún valor de $r^{2}$ $mod\ 11=0$, nos lleva a una contradicción, habíamos supuesto que $11\nmid n$. Por lo tanto si $11|n^{2}$, entonces $11|n$\\
+ \item (Ejercicio 20) Demuestre por contradicción que la suma de un número irracional y un número racional es un número irracional. 
+  
+  {\centering \textbf{Desarrollo:}\\}
+  \textit{Demostrar por contradicción}\\
+  Supongamos lo contrario, la suma de un número racional con un número irracional, es un número racional.\\
+  \textit Tenemos un racional $a$ y un irracional $b$, $a+b=p$ (un número racional) para algún $p\in\mathbb{Z}$. Entonces $b=a-p$ como a y p son racionales, b tiene que ser racional $(\rightarrow\leftarrow)$.  \\
+
+ \item (Ejercicio 25) Usando como referencia los números enteros; determinar aquellos números que satisfacen la desigualdad $n^{2}<49$, expresar este conjunto tanto por extensión como por comprensión.
+ 
+ {\centering \textbf{Desarrollo:}\\}
+  Aplicamos raíz cuadrada a ambos lados:
+  $$\sqrt{n^{2}}<\sqrt{49}$$
+  Como $\sqrt{x^{2}}=|x|$:
+  $$|n|<7$$
+  n puede ser $7 o -7$:
+  $$-7<n<7$$
+  Esto divide a la inecuación en el siguiente intervalo:
+  $$-7<n<7$$
+  Al expresarlo en conjuntos, tenemos: 
+  $$\textit{Por extensión}\\$$
+  $$S=\{-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6\}$$
+  $$\textit{Por comprensión}$$
+  $$S=\{n\in\mathbb{Z}: -7 < n < 7\}$$
+
+  \item (Ejercicio 27) Si $A, B$ y $C$ son conjuntos, demuestre o refute las siguientes igualdades entre conjuntos:
+  \begin{multicols}{2}
+    \begin{itemize}
+        \item $A\cup\varnothing=\varnothing$
+        \item $A\cap\varnothing=\varnothing$
+        \item $(A\cup B)\smallsetminus B = A$
+        \item $(A\smallsetminus B)\cup B = A$
+        \item $(A\smallsetminus C)\cup(B\smallsetminus C)=A\cap B$
+        \item $A\smallsetminus(B\cup C)=(A\smallsetminus B)\cup(A\smallsetminus C)$
+    \end{itemize}
+  \end{multicols}
+  {\centering \textbf{Desarrollo:}\\}
+  \begin{itemize}
+      \item $A\cup\varnothing=\varnothing$\\
+      Se tiene,
+      $$A\cup\varnothing=\{x: x\in A \lor x\in\varnothing\}=\{x:x\in A\}$$
+      Es decir,
+      $$A\cup\varnothing=A$$
+      Por lo tanto $A\cup\varnothing=\varnothing$ es verdad si y solo si $A=\varnothing$, de lo contrario es \textbf{falso}.
+       \item $A\cap\varnothing=\varnothing$\\
+      Se tiene,
+      $$A\cap\varnothing=\{x: x\in A \lor x\in\varnothing\}$$
+      Como no hay elementos en $\varnothing$, no hay un $x$ que pueda satisfacer esta condición "$x\in A \lor x\in\varnothing$". Por lo tanto es \textbf{verdadero}.
+      
+      \item $(A\cup B)\smallsetminus B = A$\\
+      Se tiene,
+      $$(A \cup B)\smallsetminus B=\{x: x\in (A\cup B) \wedge x\notin b\}$$
+      debido a la unión de conjuntos:
+      $$(A\cup B)\smallsetminus B =\{x: (x\in A \lor x\in B) \wedge x\notin B\}$$
+      Si $x\in A$, entonces se cumple que $x\in (A\cup B)$ y $x\in B$, ya que $x\notin B$.
+      \textit Si $x\in B$, no se cumple que $x\in (A\cup B)$ ya que $x\notin B$. Por lo tanto, $(A\cup B)\smallsetminus B=\{x: x\in A\}$ (el conjunto A) entonces la igualdad es \textbf{verdadera}. 
+
+      \item $(A\smallsetminus B)\cup B = A$\\
+      Se tiene, 
+      $$(A \smallsetminus B) \cup B=\{x: x\in (A\smallsetminus B)\lor x\in B\} $$
+      Por lo tanto,
+      $$(A \smallsetminus B) \cup B=\{x: (x\in A \wedge x\notin B) \lor x\in B\}$$
+      Para cualquier elemento $x$ del conjunto $(A \smallsetminus B)\cup B$ tenemos dos casos.
+      $$\textit{Caso 1.}$$
+      Si $x\in A \wedge x\notin B$, claramente $x\in A$ únicamente.
+      $$\textit{Caso 2.}$$
+      Si $x\in B$, no importa si $x\in A$ o no, la unión $(A \smallsetminus B)\cup B$ incluye todos los elementos de $B$. Sin embargo como $x\in B \subseteq (A \cup B$), asegurando que $x$ también esta en $A$ si está en A, la unión incluye todos los elementos de $A$ y $B$.Por lo tanto es \textbf{Verdadero}, cada elemento en $(A \smallsetminus B)\cup B$ está en $A$.\\
+
+      \item $(A\smallsetminus C)\cup(B\smallsetminus C)=A\cap B$\\
+      \textit{Contraejemplo}
+      Consideramos ejemplos específicos y verificamos si la igualdad se cumple.
+      $$A \smallsetminus C = \{x: x\in A \lor x\notin C\}=\{1,3,4\}$$
+      $$B \smallsetminus C = \{x: x\in B \lor x\notin C\}=\{3,4,6\}$$
+      Calculamos la unión.
+      $$(A\smallsetminus C) \cup (B\smallsetminus C)=\{1,3,4,6\}$$
+      Calculamos la intersección.
+      $$A \cap B = \{3,4\}$$
+      Como se observa, $(A \smallsetminus C)\cup (B \smallsetminus C)=\{1,3,4,6\}$ no es igual a $A \cap B = \{3,4\}$, por lo tanto es \textbf{falso}.
+
+      \item $A\smallsetminus(B\cup C)=(A\smallsetminus B)\cup(A\smallsetminus C)$.\\
+      Lado izquierdo.
+      $$A \smallsetminus (B \cup C)=\{x:(x\in A \wedge x\notin (B \cup C)\}$$
+      Lado derecho.
+      $$(A \smallsetminus B)\cup(A \smallsetminus C)=\{x: (x\in A \wedge x\notin B)\lor\ (x\in A \wedge x\notin B)\}$$
+      Consideremos ejemplos específicos para ver diferencias en ambos lados de la igualdad. 
+      $$A=\{1,2,3\} \\\\\\\ B=\{2\} \\\\\\\ C=\{3\}$$
+      Lado izquierdo.
+      $$A \smallsetminus(B \cup C)$$
+      $$(B \cup C) =\{2,3\} \Longrightarrow A\smallsetminus (B\cup C)=\{1\}$$
+      Lado derecho. 
+      $$(A \smallsetminus B)\cup (A \smallsetminus C)$$
+      $$(A \smallsetminus C)=\{1,2\}$$
+      $$(A \smallsetminus B)=\{1,3\}$$
+      $$(A \smallsetminus B)\cup (A \smallsetminus C =\{1,2,3\})$$
+      Por lo tanto, es \textbf{falso}, ya que, $A \smallsetminus (B\cup C)\neq (A \smallsetminus B)\cup (A \smallsetminus C)$. 
+      
+ 
+  \end{itemize}
+
+\end{enumerate}
+
+\end{document}
